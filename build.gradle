@@ -54,20 +54,20 @@ subprojects {
         it.options.release = javaVer
     }
 
+    if (project.name != 'common') {
+        evaluationDependsOn(':common')
+    }
+
     tasks.processResources {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 
+    configurations {
+        embed
+        implementation.extendsFrom(embed)
+    }
+
     if (project.name != 'common') {
-        configurations {
-            embed
-            implementation.extendsFrom(embed)
-        }
-
-        repositories {
-            maven { url = 'https://jitpack.io' }
-        }
-
         sourceSets {
             main {
                 java {
@@ -84,15 +84,25 @@ subprojects {
                 }
             }
         }
-    }
 
-    dependencies {
-        //implementation "com.github.Akfz.AsLib:common:${project.aslib_version}"
-        //if (project.name != 'common') {
-        //    annotationProcessor "com.github.Akfz.AsLib:common:${project.aslib_version}"
-        //}
-        if (project.name != "common") annotationProcessor project(":common")
-        if (project.name != "common") implementation project(':common')
+        dependencies {
+            compileOnly project(':common').sourceSets.compiler.output
+            annotationProcessor project(':common').sourceSets.compiler.output
+            implementation project(':common')
+        }
+    }
+    
+    //Aslib - optionally code helper for registries gui and more
+    if (project.hasProperty('aslib_version') && project.aslib_version) {
+        repositories {
+            maven {
+                url = 'https://raw.githubusercontent.com/Akfz/AsLib/maven/'
+            }
+        }
+
+        dependencies {
+            implementation "v.akfz:aslib-common:${project.aslib_version}"
+        }
     }
 
     tasks.named('processResources', ProcessResources).configure {

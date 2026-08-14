@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "setyourpackage",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "setyourmodid.refmap.json",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -12,9 +12,24 @@ repositories {
     maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
 }
 
+sourceSets {
+    compiler {
+        java {
+            srcDirs = ['src/compiler/java']
+        }
+        resources {
+            srcDirs = ['src/compiler/resources']
+        }
+    }
+}
+
 configurations {
     embed
     implementation.extendsFrom(embed)
+}
+
+tasks.named('compileJava') {
+    dependsOn tasks.named('compileCompilerJava')
 }
 
 dependencies {
@@ -36,6 +51,9 @@ dependencies {
     def mixinExtrasVer = project.findProperty('mixinextras_version') ?: '0.4.1'
     compileOnly "io.github.llamalad7:mixinextras-common:${mixinExtrasVer}"
     annotationProcessor "io.github.llamalad7:mixinextras-common:${mixinExtrasVer}"
+
+    compileOnly sourceSets.compiler.output
+    annotationProcessor sourceSets.compiler.output
 }
 
 tasks.named('processResources', ProcessResources).configure {
