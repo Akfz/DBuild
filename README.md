@@ -1,4 +1,4 @@
-[English] | [Русский](READMERu.md)
+[English] | [Русский](READMEru.md)
 
 DBuild is a Gradle script that simplifies working with different mod loaders by assembling them at compile-time for each target mod loader.  
 Unlike Architectury API, you do not need an additional runtime mod, and execution is faster.  
