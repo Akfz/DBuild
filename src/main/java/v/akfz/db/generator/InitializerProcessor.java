@@ -24,6 +24,9 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+/**
+ * heart of the.. Util? Idk how to name this.. Like its not a compiler
+ */
 @SupportedAnnotationTypes("v.akfz.db.generator.GenerateInitializer")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class InitializerProcessor extends AbstractProcessor {
