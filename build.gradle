@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
     id 'com.gradleup.shadow' version '8.3.5'
 }
 
@@ -43,4 +44,12 @@ shadowJar {
 
 tasks.build {
     dependsOn tasks.shadowJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.shadow
+        }
+    }
 }
