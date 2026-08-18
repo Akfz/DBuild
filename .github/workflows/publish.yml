@@ -25,7 +25,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Publish Maven Artifacts
-        run: ./gradlew publish
+        run: ./gradlew publish -Pmod_version="1.0.${{ github.run_number }}"
 
       - name: Deploy to maven branch
         uses: JamesIves/github-pages-deploy-action@v4

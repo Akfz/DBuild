@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'v.akfz'
-version = project.version
+version = project.findProperty('mod_version') ?: '1.0.0'
 
 repositories {
     mavenCentral()
