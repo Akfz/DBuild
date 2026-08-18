@@ -31,43 +31,37 @@ public class InitializerProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Filer filer = processingEnv.getFiler();
+        String currentTarget = processingEnv.getOptions().get("modLoaderTarget");
+
+        boolean isNeoForge = "neoforge".equalsIgnoreCase(currentTarget);
+        boolean targetAllowsFabric = currentTarget == null || "fabric".equalsIgnoreCase(currentTarget);
+        boolean targetAllowsForge = currentTarget == null || "forge".equalsIgnoreCase(currentTarget) || isNeoForge;
 
         for (Element element : roundEnv.getElementsAnnotatedWith(GenerateInitializer.class)) {
-            if (element instanceof TypeElement typeElement) {
-                GenerateInitializer annotation = typeElement.getAnnotation(GenerateInitializer.class);
+            if (!(element instanceof TypeElement typeElement)) continue;
 
-                LoaderType loader = annotation.loader();
-                String modId = annotation.modId();
-                boolean isClient = annotation.isClient();
-                String packageId = annotation.packageStr();
-                String addClassFg = annotation.addClassNameForge();
-                String addClassFb = annotation.addClassNameFabric();
+            GenerateInitializer annotation = typeElement.getAnnotation(GenerateInitializer.class);
 
-                TypeName mainClassName = getMainClassTypeName(annotation, typeElement);
+            LoaderType loader = annotation.loader();
+            String modId = annotation.modId();
+            boolean isClient = annotation.isClient();
+            String packageId = annotation.packageStr();
 
-                String endPackage = (packageId.isEmpty() || packageId.equalsIgnoreCase("null"))
-                        ? processingEnv.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString()
-                        : packageId;
+            TypeName mainClass = getMainClassTypeName(annotation, typeElement);
 
-                String currentTarget = processingEnv.getOptions().get("modLoaderTarget");
-                boolean isNeoForge = currentTarget != null && currentTarget.equalsIgnoreCase("neoforge");
+            String endPackage = (packageId.isEmpty() || "null".equalsIgnoreCase(packageId))
+                    ? processingEnv.getElementUtils().getPackageOf(typeElement).getQualifiedName().toString()
+                    : packageId;
 
-                boolean targetAllowsFabric = currentTarget == null || currentTarget.equalsIgnoreCase("fabric");
-                boolean targetAllowsForge = currentTarget == null || currentTarget.equalsIgnoreCase("forge") || isNeoForge;
+            boolean loaderAllowsFabric = loader == null || loader == LoaderType.FabricLike || loader == LoaderType.Both;
+            boolean loaderAllowsForge = loader == null || loader == LoaderType.ForgeLike || loader == LoaderType.Both;
 
-                boolean loaderAllowsFabric = loader == null || loader == LoaderType.FabricLike || loader == LoaderType.Both;
-                boolean loaderAllowsForge = loader == null || loader == LoaderType.ForgeLike || loader == LoaderType.Both;
+            if (targetAllowsFabric && loaderAllowsFabric) {
+                generateFabricInitializer(filer, mainClass, isClient, endPackage, annotation.addClassNameFabric());
+            }
 
-                boolean shouldGenerateFabric = targetAllowsFabric && loaderAllowsFabric;
-                boolean shouldGenerateForge = targetAllowsForge && loaderAllowsForge;
-
-                if (shouldGenerateFabric) {
-                    generateFabricInitializer(filer, mainClassName, isClient, endPackage, addClassFb);
-                }
-
-                if (shouldGenerateForge) {
-                    generateForgeInitializer(filer, mainClassName, modId, isClient, endPackage, addClassFg, isNeoForge);
-                }
+            if (targetAllowsForge && loaderAllowsForge) {
+                generateForgeInitializer(filer, mainClass, modId, isClient, endPackage, annotation.addClassNameForge(), isNeoForge);
             }
         }
         return true;
@@ -76,36 +70,25 @@ public class InitializerProcessor extends AbstractProcessor {
     private TypeName getMainClassTypeName(GenerateInitializer annotation, TypeElement annotatedElement) {
         try {
             Class<?> clazz = annotation.mainClass();
-            if (clazz.getName().equals("v.akfz.db.generator.NotAClass")) {
-                return ClassName.get(annotatedElement);
-            }
-            return ClassName.get(clazz);
+            return NotAClass.class.equals(clazz) ? ClassName.get(annotatedElement) : ClassName.get(clazz);
         } catch (MirroredTypeException mte) {
             TypeMirror typeMirror = mte.getTypeMirror();
-            if (typeMirror.toString().equals("v.akfz.db.generator.NotAClass")) {
-                return ClassName.get(annotatedElement);
-            }
-            return TypeName.get(typeMirror);
+            return typeMirror.toString().equals(NotAClass.class.getName())
+                    ? ClassName.get(annotatedElement)
+                    : TypeName.get(typeMirror);
         }
     }
 
     private void generateForgeInitializer(Filer filer, TypeName mainClass, String modId, boolean isClient,
-            String packageId, String addClassName, boolean isNeoForge) {
+                                          String packageId, String addClassName, boolean isNeoForge) {
 
-        String mainSimpleName = getSimpleName(mainClass);
-        String generatedClassName = mainSimpleName + addClassName;
+        String generatedClassName = getSimpleName(mainClass) + addClassName;
+        String basePkg = isNeoForge ? "net.neoforged" : "net.minecraftforge";
 
-        ClassName modAnnotation = isNeoForge
-                ? ClassName.get("net.neoforged.fml.common", "Mod")
-                : ClassName.get("net.minecraftforge.fml.common", "Mod");
-
-        ClassName distClass = isNeoForge
-                ? ClassName.get("net.neoforged.api.distmarker", "Dist")
-                : ClassName.get("net.minecraftforge.api.distmarker", "Dist");
-
-        ClassName fmlEnvClass = isNeoForge
-                ? ClassName.get("net.neoforged.fml.loading", "FMLEnvironment")
-                : ClassName.get("net.minecraftforge.fml.loading", "FMLEnvironment");
+        ClassName modAnnotation = ClassName.get(basePkg + ".fml.common", "Mod");
+        ClassName contextClass = ClassName.get(basePkg + ".fml.javafmlmod", "FMLJavaModLoadingContext");
+        ClassName setupEventClass = ClassName.get(basePkg + ".fml.event.lifecycle",
+                isClient ? "FMLClientSetupEvent" : "FMLCommonSetupEvent");
 
         FieldSpec mainInstanceField = FieldSpec.builder(mainClass, "MAININSTANCE", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                 .initializer("new $T()", mainClass)
@@ -117,45 +100,35 @@ public class InitializerProcessor extends AbstractProcessor {
                 .addStatement("return MAININSTANCE")
                 .build();
 
-        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC);
+        MethodSpec setupMethod = MethodSpec.methodBuilder("onSetup")
+                .addModifiers(Modifier.PRIVATE)
+                .addParameter(setupEventClass, "event")
+                .addStatement("MAININSTANCE.init()")
+                .build();
 
-        if (isClient) {
-            constructorBuilder.beginControlFlow("if ($T.dist == $T.CLIENT)", fmlEnvClass, distClass)
-                    .addStatement("MAININSTANCE.init()")
-                    .endControlFlow();
-        } else {
-            constructorBuilder.addStatement("MAININSTANCE.init()");
-        }
+        MethodSpec constructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("$T.get().getModEventBus().addListener(this::onSetup)", contextClass)
+                .build();
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(AnnotationSpec.builder(modAnnotation).addMember("value", "$S", modId).build())
                 .addField(mainInstanceField)
                 .addMethod(getInstanceMethod)
-                .addMethod(constructorBuilder.build())
+                .addMethod(constructor)
+                .addMethod(setupMethod)
                 .build();
 
-        try {
-            JavaFile.builder(packageId, generatedClass)
-                    .build()
-                    .writeTo(filer);
-        } catch (IOException e) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-                    "Error generating Forge Initializer (" + generatedClassName + "): " + e.getMessage());
-        }
+        writeClass(filer, packageId, generatedClassName, generatedClass, "Forge");
     }
 
     private void generateFabricInitializer(Filer filer, TypeName mainClass, boolean isClient,
-            String packageId, String addClassName) {
+                                           String packageId, String addClassName) {
 
-        String mainSimpleName = getSimpleName(mainClass);
-        String generatedClassName = mainSimpleName + addClassName;
+        String generatedClassName = getSimpleName(mainClass) + addClassName;
 
-        ClassName fabricInterface = isClient
-                ? ClassName.get("net.fabricmc.api", "ClientModInitializer")
-                : ClassName.get("net.fabricmc.api", "ModInitializer");
-
+        ClassName fabricInterface = ClassName.get("net.fabricmc.api", isClient ? "ClientModInitializer" : "ModInitializer");
         String methodName = isClient ? "onInitializeClient" : "onInitialize";
 
         FieldSpec mainInstanceField = FieldSpec.builder(mainClass, "MAININSTANCE", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
@@ -183,13 +156,17 @@ public class InitializerProcessor extends AbstractProcessor {
                 .addMethod(initMethod)
                 .build();
 
+        writeClass(filer, packageId, generatedClassName, generatedClass, "Fabric");
+    }
+
+    private void writeClass(Filer filer, String packageId, String className, TypeSpec typeSpec, String loaderType) {
         try {
-            JavaFile.builder(packageId, generatedClass)
+            JavaFile.builder(packageId, typeSpec)
                     .build()
                     .writeTo(filer);
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-                    "Error generating Fabric Initializer (" + generatedClassName + "): " + e.getMessage());
+                    "Error generating " + loaderType + " Initializer (" + className + "): " + e.getMessage());
         }
     }
 
@@ -197,7 +174,7 @@ public class InitializerProcessor extends AbstractProcessor {
         if (typeName instanceof ClassName className) {
             return className.simpleName();
         }
-        String stringName = typeName.toString();
-        return stringName.substring(stringName.lastIndexOf('.') + 1);
+        String name = typeName.toString();
+        return name.substring(name.lastIndexOf('.') + 1);
     }
 }

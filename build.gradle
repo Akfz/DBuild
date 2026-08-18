@@ -1,11 +1,10 @@
 plugins {
     id 'java-library'
-    id 'eclipse'
     id 'com.gradleup.shadow' version '8.3.5'
 }
 
 group = 'v.akfz'
-version = project.version 
+version = project.version
 
 repositories {
     mavenCentral()
@@ -15,30 +14,17 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}
-
-eclipse {
-    classpath {
-        file {
-            whenMerged { classpath ->
-                classpath.entries.each { entry ->
-                    if (entry.kind == 'con' && entry.path.contains('JRE_CONTAINER')) {
-                        entry.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('accessible', 'com/sun/tools/javac/**'))
-                    }
-                }
-            }
-        }
-    }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.compilerArgs += [
-        '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-        '--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
-        '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-        '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
-    ]
+    options.compilerArgs.addAll([
+            '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+            '-parameters',
+            '-g'
+    ])
 }
 
 dependencies {
