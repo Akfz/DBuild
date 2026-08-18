@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'v.akfz'
-version = '1.0.0' // Твоя версия DBuild
+version = project.version
 
 repositories {
     mavenCentral()
@@ -45,6 +45,8 @@ shadowJar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = 'v.akfz'
+            artifactId = 'DBuild'
             from components.shadow
         }
     }
@@ -55,7 +57,6 @@ publishing {
         }
     }
 }
-
 tasks.build {
     dependsOn tasks.shadowJar
 }
