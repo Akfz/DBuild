@@ -3,9 +3,9 @@
   "component": {
     "group": "v.akfz",
     "module": "DBuild",
-    "version": "1.0.0",
+    "version": "1.0-SNAPSHOT",
     "attributes": {
-      "org.gradle.status": "release"
+      "org.gradle.status": "integration"
     }
   },
   "createdBy": {
@@ -24,13 +24,13 @@
       },
       "files": [
         {
-          "name": "DBuild-1.0.0.jar",
-          "url": "DBuild-1.0.0.jar",
+          "name": "DBuild-1.0-SNAPSHOT.jar",
+          "url": "DBuild-1.0-SNAPSHOT.jar",
           "size": 120647,
-          "sha512": "15a1ebfd33b963e193d63c0c0615e1a3d801ac28aab6b513267d03d332bc0a8b3bea5ee0431b04c194b33cfeb26ae483b8d79bc4f21c3fdd8fd7366feba67f17",
-          "sha256": "20b9b12b8203fe5927ad5d9b774ab7e9f1788d2f317ac114776ed22f739ec3d0",
-          "sha1": "8e41f49aafaf0502cd111438eb7732d52a71dfc0",
-          "md5": "5ff8093ab8d6c1bc86db11ba7028cd6d"
+          "sha512": "748040d473332f76b385c4899bdb1bbb4ddeb10ba8974efdf932a919b7fbc9c4af607a82362ec690813b2006b6046afd9897c3f26b020e75204a44446fb26bce",
+          "sha256": "ff12ad654bd7c07ac2db0034e1a7e3afbb345f43490486736f2a23bf4e503580",
+          "sha1": "fd64566c7fe55e10d353095142b5021484179d1f",
+          "md5": "e2f96d7bb3b9d13b09cab49087c73f61"
         }
       ]
     }
