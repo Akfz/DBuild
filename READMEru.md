@@ -1,17 +1,17 @@
-[**English**] | [Русский](README_ru.md)
+[English](README.md) | [**Русский**]
 
 # DBuild
 
-**DBuild** is an annotation processor (code generator) that simplifies cross-platform Minecraft mod development by generating entry points at compile-time.
+**DBuild** — это генератор кода на основе аннотаций (Annotation Processor), который упрощает разработку под разные модлоадеры, собирая точки входа на стадии компиляции.
 
-Unlike Architectury API, it does not require an additional runtime library mod, ensuring zero overhead and better performance.
+В отличие от Architectury API, вам не нужен дополнительный runtime-мод, а работа происходит быстрее.
 
-**Limitations:** The `common` module lacks direct compile-time access to platform-specific mod loader APIs (unless code is written directly inside platform modules like `forge`, `fabric`, etc.), requiring reflection or code generation.
+**Ограничения:** В модуле `common` нет прямого доступа к API конкретных модлоадеров (если не писать код в самих модулях `forge`, `fabric` и т.д.), обращение к ним возможно только через рефлексию или генерацию кода.
 
-## Recommended Structure:
-* **`common`** — the main module containing core business logic (up to 100% of the codebase).
-* **`fabric` / `forge` / `neoforge`** *(1.20.4+ only)* — platform integration modules containing only entry points (`ModInitializer`, `@Mod`) and metadata (`fabric.mod.json`, `mods.toml`).
+## Рекомендуемая структура:
+* **`common`** — основной модуль, содержащий базовую бизнес-логику модификации (до 100% объема кода).
+* **`fabric` / `forge` / `neoforge`** *(только 1.20.4+)* — платформенные модули интеграции, содержащие только точки входа (`ModInitializer`, `@Mod`) и метаданные пакетов (`fabric.mod.json`, `mods.toml`).
 
-*P.S. Everything can be generated directly inside `common`; during compilation, unneeded metadata files are automatically stripped (e.g., `fabric.mod.json` will not end up in a Forge build).*
+*P.S. Всё это можно генерировать прямо в `common`: при компиляции ненужные файлы автоматически отфильтруются (например, `fabric.mod.json` не попадет в Forge-сборку).*
 
-**Project Template:** https://github.com/Akfz/DBuild-TEMPLATE
+**Пример (Template):** https://github.com/Akfz/DBuild-TEMPLATE
