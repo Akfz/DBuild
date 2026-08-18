@@ -1,13 +1,17 @@
-[English](README.md) | [Русский]
+[**English**] | [Русский](README_ru.md)
 
-DBuild - это градл скрипт который упрощает работу с разными модлоадерами, собирая их на стадии компиляции под разные модлоадеры.
-В отличии от Architectury API, вам не нужен будет доп. мод, а так же это быстрее.
-Но есть минусы - в common нет доступа к модлоадерам (если не писать код в самом модуле forge fabric и т.д), только через рефлексию.
+# DBuild
 
-Структура :
-* **`common`** — основной модуль, содержащий базовую бизнес-логику модификации (до 100% объема кода).
-* **`fabric` / `forge` / `neoforge`***(только 1.20.4+)* — платформные модули интеграции, содержащие только точки входа (ModInitializer, @Mod) и метаданные пакетов (fabric.mod.json, mods.toml).
+**DBuild** is an annotation processor (code generator) that simplifies cross-platform Minecraft mod development by generating entry points at compile-time.
 
-*P.s это все можно генерировать в `common`, при компиляции "не нужные" файлы сами уберутся(типо fabric.mod.json не попадет в forge и подобное)*
+Unlike Architectury API, it does not require an additional runtime library mod, ensuring zero overhead and better performance.
 
-Готовые JAR-файлы формируются в директории build/libs/ (для dev(как библиотеки и т.д) тоже)
+**Limitations:** The `common` module lacks direct compile-time access to platform-specific mod loader APIs (unless code is written directly inside platform modules like `forge`, `fabric`, etc.), requiring reflection or code generation.
+
+## Recommended Structure:
+* **`common`** — the main module containing core business logic (up to 100% of the codebase).
+* **`fabric` / `forge` / `neoforge`** *(1.20.4+ only)* — platform integration modules containing only entry points (`ModInitializer`, `@Mod`) and metadata (`fabric.mod.json`, `mods.toml`).
+
+*P.S. Everything can be generated directly inside `common`; during compilation, unneeded metadata files are automatically stripped (e.g., `fabric.mod.json` will not end up in a Forge build).*
+
+**Project Template:** https://github.com/Akfz/DBuild-TEMPLATE

@@ -1,13 +1,17 @@
-[English] | [Русский](READMEru.md)
+[English](README.md) | [**Русский**]
 
-DBuild is a Gradle script that simplifies working with different mod loaders by assembling them at compile-time for each target mod loader.  
-Unlike Architectury API, you do not need an additional runtime mod, and execution is faster.  
-However, there are drawbacks: the `common` module has no direct access to mod loader APIs (unless you write code directly inside platform modules like `forge`, `fabric`, etc.), requiring access via reflection.
+# DBuild
 
-### Structure:
-* **`common`** — the main module containing the core business logic of the modification (up to 100% of the codebase).
-* **`fabric` / `forge` / `neoforge`** *(1.20.4+ only)* — platform integration modules containing only entry points (`ModInitializer`, `@Mod`) and package metadata (`fabric.mod.json`, `mods.toml`).
+**DBuild** — это генератор кода на основе аннотаций (Annotation Processor), который упрощает разработку под разные модлоадеры, собирая точки входа на стадии компиляции.
 
-*P.S. All of this can be generated inside `common`; during compilation, unneeded files are automatically stripped (e.g., `fabric.mod.json` will not end up in the Forge build, etc.).*
+В отличие от Architectury API, вам не нужен дополнительный runtime-мод, а работа происходит быстрее.
 
-Compiled JAR files are generated in the `build/libs/` directory (including dev/library artifacts).
+**Ограничения:** В модуле `common` нет прямого доступа к API конкретных модлоадеров (если не писать код в самих модулях `forge`, `fabric` и т.д.), обращение к ним возможно только через рефлексию или генерацию кода.
+
+## Рекомендуемая структура:
+* **`common`** — основной модуль, содержащий базовую бизнес-логику модификации (до 100% объема кода).
+* **`fabric` / `forge` / `neoforge`** *(только 1.20.4+)* — платформенные модули интеграции, содержащие только точки входа (`ModInitializer`, `@Mod`) и метаданные пакетов (`fabric.mod.json`, `mods.toml`).
+
+*P.S. Всё это можно генерировать прямо в `common`: при компиляции ненужные файлы автоматически отфильтруются (например, `fabric.mod.json` не попадет в Forge-сборку).*
+
+**Пример (Template):** https://github.com/Akfz/DBuild-TEMPLATE
