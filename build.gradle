@@ -27,6 +27,13 @@ tasks.withType(JavaCompile).configureEach {
     ])
 }
 
+tasks.withType(Javadoc).configureEach {
+    options.addMultilineMultiValuedOption('add-exports').value = [
+            'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
+    ]
+}
+
 dependencies {
     implementation 'com.squareup:javapoet:1.13.0'
 }
