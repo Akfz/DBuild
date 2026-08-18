@@ -1,15 +1,12 @@
-name: DB
+name: Publish to Maven Branch
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,11 +21,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Publish Maven Artifacts
+        run: ./gradlew publish
 
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Deploy to maven branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          name: db-generator-jar
-          path: build/libs/*.jar
+          folder: build/repo
+          branch: maven
