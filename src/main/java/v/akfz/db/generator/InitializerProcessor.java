@@ -28,9 +28,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-/**
- * Safe Initializer annotation processor using standard compiler Filer API.
- */
 @SupportedAnnotationTypes("v.akfz.db.generator.GenerateInitializer")
 @SupportedOptions("modLoaderTarget")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
@@ -107,9 +104,7 @@ public class InitializerProcessor extends AbstractProcessor {
         String generatedClassName = getSimpleName(mainClass) + addClassName;
         String fullClassName = packageId + "." + generatedClassName;
 
-        if (!generatedClasses.add(fullClassName)) {
-            return;
-        }
+        if (!generatedClasses.add(fullClassName)) return;
 
         String basePkg = isNeoForge ? "net.neoforged" : "net.minecraftforge";
 
@@ -157,9 +152,7 @@ public class InitializerProcessor extends AbstractProcessor {
         String generatedClassName = getSimpleName(mainClass) + addClassName;
         String fullClassName = packageId + "." + generatedClassName;
 
-        if (!generatedClasses.add(fullClassName)) {
-            return;
-        }
+        if (!generatedClasses.add(fullClassName)) return;
 
         ClassName fabricInterface = ClassName.get("net.fabricmc.api", isClient ? "ClientModInitializer" : "ModInitializer");
         String methodName = isClient ? "onInitializeClient" : "onInitialize";

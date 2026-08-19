@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Prevents the annotated class from being compiled into the final release JAR.
  */
 @Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.SOURCE)
 public @interface DontCompile {
 
     /**
