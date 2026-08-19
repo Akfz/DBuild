@@ -19,20 +19,6 @@ java {
     withJavadocJar()
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs.addAll([
-            '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-            '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
-            '-parameters',
-            '-g'
-    ])
-}
-
-tasks.withType(Javadoc).configureEach {
-    options.addBooleanOption('-add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED', true)
-    options.addBooleanOption('-add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED', true)
-}
-
 dependencies {
     implementation 'com.squareup:javapoet:1.13.0'
 }
@@ -62,3 +48,47 @@ publishing {
 tasks.build {
     dependsOn tasks.shadowJar
 }
+
+/*
+For work dontcompile add :
+
+def getDontCompileExclusions() {
+    def alwaysExclude = []
+    def releaseOnlyExclude = []
+
+    sourceSets.main.java.srcDirs.each { File srcDir ->
+        if (srcDir.exists()) {
+            srcDir.eachFileRecurse { File file ->
+                if (file.name.endsWith('.java')) {
+                    String text = file.text
+                    if (text.contains('@DontCompile')) {
+                        String relPath = srcDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+
+                        boolean isFalse = (text =~ /@DontCompile\s*\(\s*(value\s*=\s*)?false\s*\)/).find()
+
+                        if (isFalse) {
+                            alwaysExclude << relPath
+                        } else {
+                            releaseOnlyExclude << relPath
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return [always: alwaysExclude, releaseOnly: releaseOnlyExclude]
+}
+
+afterEvaluate {
+    def exclusions = getDontCompileExclusions()
+
+    tasks.named('compileJava', JavaCompile) {
+        if (!exclusions.always.isEmpty()) exclude(exclusions.always)
+        if (!exclusions.releaseOnly.isEmpty()) exclude(exclusions.releaseOnly)
+    }
+
+    tasks.matching { it.name == 'compileTestJava' }.configureEach {
+        if (!exclusions.always.isEmpty()) exclude(exclusions.always)
+    }
+}
+ */
