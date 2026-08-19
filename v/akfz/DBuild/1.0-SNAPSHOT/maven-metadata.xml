@@ -3,38 +3,38 @@
   <groupId>v.akfz</groupId>
   <artifactId>DBuild</artifactId>
   <versioning>
-    <lastUpdated>20260819111455</lastUpdated>
+    <lastUpdated>20260819111815</lastUpdated>
     <snapshot>
-      <timestamp>20260819.111455</timestamp>
+      <timestamp>20260819.111815</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
-        <extension>module</extension>
-        <value>1.0-20260819.111455-1</value>
-        <updated>20260819111455</updated>
-      </snapshotVersion>
-      <snapshotVersion>
-        <extension>jar</extension>
-        <value>1.0-20260819.111455-1</value>
-        <updated>20260819111455</updated>
-      </snapshotVersion>
-      <snapshotVersion>
-        <extension>pom</extension>
-        <value>1.0-20260819.111455-1</value>
-        <updated>20260819111455</updated>
-      </snapshotVersion>
-      <snapshotVersion>
         <classifier>javadoc</classifier>
         <extension>jar</extension>
-        <value>1.0-20260819.111455-1</value>
-        <updated>20260819111455</updated>
+        <value>1.0-20260819.111815-1</value>
+        <updated>20260819111815</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0-20260819.111815-1</value>
+        <updated>20260819111815</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>module</extension>
+        <value>1.0-20260819.111815-1</value>
+        <updated>20260819111815</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>sources</classifier>
         <extension>jar</extension>
-        <value>1.0-20260819.111455-1</value>
-        <updated>20260819111455</updated>
+        <value>1.0-20260819.111815-1</value>
+        <updated>20260819111815</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0-20260819.111815-1</value>
+        <updated>20260819111815</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

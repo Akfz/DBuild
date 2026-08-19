@@ -1,0 +1,38 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "v.akfz",
+    "module": "DBuild",
+    "version": "1.0-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "shadowRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "shadowed",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "DBuild-1.0-SNAPSHOT.jar",
+          "url": "DBuild-1.0-SNAPSHOT.jar",
+          "size": 117728,
+          "sha512": "dbc28b9732ea29a66fe15276142b19aa7bcd433490dad9bfdbbc913c706ee2986cc9630c135c58a75eb0834515ff75b4efb184843837c01cb7963cb0007927a0",
+          "sha256": "2e12c63a8cb3c25fb80256f0500136c484e82c6eb294d261facdb113aa6692cf",
+          "sha1": "cbc37a63ce960580c9e49ead2efa04974e44005a",
+          "md5": "5dc37c8d652edd494f0b732253f0ed35"
+        }
+      ]
+    }
+  ]
+}
