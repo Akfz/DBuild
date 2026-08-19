@@ -1,17 +1,21 @@
 package v.akfz.db.generator;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.FilerException;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -28,11 +32,18 @@ import com.squareup.javapoet.TypeSpec;
  * Safe Initializer annotation processor using standard compiler Filer API.
  */
 @SupportedAnnotationTypes("v.akfz.db.generator.GenerateInitializer")
+@SupportedOptions("modLoaderTarget")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class InitializerProcessor extends AbstractProcessor {
 
+    private final Set<String> generatedClasses = new HashSet<>();
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (roundEnv.processingOver()) {
+            return true;
+        }
+
         Filer filer = processingEnv.getFiler();
         String currentTarget = processingEnv.getOptions().get("modLoaderTarget");
 
@@ -80,9 +91,13 @@ public class InitializerProcessor extends AbstractProcessor {
             return NotAClass.class.equals(clazz) ? ClassName.get(annotatedElement) : ClassName.get(clazz);
         } catch (MirroredTypeException mte) {
             TypeMirror typeMirror = mte.getTypeMirror();
-            return typeMirror.toString().equals(NotAClass.class.getName())
-                    ? ClassName.get(annotatedElement)
-                    : TypeName.get(typeMirror);
+            if (typeMirror instanceof DeclaredType declaredType) {
+                Element element = declaredType.asElement();
+                if (element instanceof TypeElement te && NotAClass.class.getName().equals(te.getQualifiedName().toString())) {
+                    return ClassName.get(annotatedElement);
+                }
+            }
+            return TypeName.get(typeMirror);
         }
     }
 
@@ -90,6 +105,12 @@ public class InitializerProcessor extends AbstractProcessor {
                                           String packageId, String addClassName, boolean isNeoForge) {
 
         String generatedClassName = getSimpleName(mainClass) + addClassName;
+        String fullClassName = packageId + "." + generatedClassName;
+
+        if (!generatedClasses.add(fullClassName)) {
+            return;
+        }
+
         String basePkg = isNeoForge ? "net.neoforged" : "net.minecraftforge";
 
         ClassName modAnnotation = ClassName.get(basePkg + ".fml.common", "Mod");
@@ -134,6 +155,11 @@ public class InitializerProcessor extends AbstractProcessor {
                                            String packageId, String addClassName) {
 
         String generatedClassName = getSimpleName(mainClass) + addClassName;
+        String fullClassName = packageId + "." + generatedClassName;
+
+        if (!generatedClasses.add(fullClassName)) {
+            return;
+        }
 
         ClassName fabricInterface = ClassName.get("net.fabricmc.api", isClient ? "ClientModInitializer" : "ModInitializer");
         String methodName = isClient ? "onInitializeClient" : "onInitialize";
@@ -171,6 +197,7 @@ public class InitializerProcessor extends AbstractProcessor {
             JavaFile.builder(packageId, typeSpec)
                     .build()
                     .writeTo(filer);
+        } catch (FilerException ignored) {
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                     "Error generating " + loaderType + " Initializer (" + className + "): " + e.getMessage());
