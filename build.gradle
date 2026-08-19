@@ -49,10 +49,6 @@ tasks.build {
     dependsOn tasks.shadowJar
 }
 
-tasks.withType(PublishToMavenRepository).configureEach {
-    publication.isUniqueVersion = false
-}
-
 /*
 For work dontcompile add :
 
