@@ -25,7 +25,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 /**
- * heart of the.. Util? Idk how to name this.. Like its not a compiler
+ * Safe Initializer annotation processor using standard compiler Filer API.
  */
 @SupportedAnnotationTypes("v.akfz.db.generator.GenerateInitializer")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
@@ -36,9 +36,13 @@ public class InitializerProcessor extends AbstractProcessor {
         Filer filer = processingEnv.getFiler();
         String currentTarget = processingEnv.getOptions().get("modLoaderTarget");
 
+        if (currentTarget == null || "common".equalsIgnoreCase(currentTarget) || "none".equalsIgnoreCase(currentTarget)) {
+            return true;
+        }
+
+        boolean isFabric = "fabric".equalsIgnoreCase(currentTarget);
+        boolean isForge = "forge".equalsIgnoreCase(currentTarget);
         boolean isNeoForge = "neoforge".equalsIgnoreCase(currentTarget);
-        boolean targetAllowsFabric = currentTarget == null || "fabric".equalsIgnoreCase(currentTarget);
-        boolean targetAllowsForge = currentTarget == null || "forge".equalsIgnoreCase(currentTarget) || isNeoForge;
 
         for (Element element : roundEnv.getElementsAnnotatedWith(GenerateInitializer.class)) {
             if (!(element instanceof TypeElement typeElement)) continue;
@@ -59,11 +63,11 @@ public class InitializerProcessor extends AbstractProcessor {
             boolean loaderAllowsFabric = loader == null || loader == LoaderType.FabricLike || loader == LoaderType.Both;
             boolean loaderAllowsForge = loader == null || loader == LoaderType.ForgeLike || loader == LoaderType.Both;
 
-            if (targetAllowsFabric && loaderAllowsFabric) {
+            if (isFabric && loaderAllowsFabric) {
                 generateFabricInitializer(filer, mainClass, isClient, endPackage, annotation.addClassNameFabric());
             }
 
-            if (targetAllowsForge && loaderAllowsForge) {
+            if ((isForge || isNeoForge) && loaderAllowsForge) {
                 generateForgeInitializer(filer, mainClass, modId, isClient, endPackage, annotation.addClassNameForge(), isNeoForge);
             }
         }
