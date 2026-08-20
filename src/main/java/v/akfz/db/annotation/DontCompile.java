@@ -11,10 +11,4 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.SOURCE)
 public @interface DontCompile {
-
-    /**
-     * If {@code true}, the class will still be compiled during test runs (e.g. JUnit or IDE test tasks).
-     * If {@code false}, the class will be stripped in all compilation environments.
-     */
-    boolean value() default true;
 }
