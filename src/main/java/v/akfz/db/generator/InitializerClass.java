@@ -14,6 +14,7 @@ package v.akfz.db.generator;
  * }
  * }</pre>
  */
+@Deprecated(forRemoval = true)
 public interface InitializerClass {
     void init();
 }
