@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Prevents the annotated class from being compiled into the final release JAR.
  */
+@Deprecated(forRemoval = true)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.SOURCE)
 public @interface DontCompile {
