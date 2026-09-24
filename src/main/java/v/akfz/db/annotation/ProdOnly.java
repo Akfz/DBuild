@@ -5,10 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Prevents the annotated class from being compiled into the final release JAR.
- */
-@Target({ ElementType.TYPE })
+/** Included only in prod (obf) jar, not in dev. Requires dbuild plugin. */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
-public @interface DontCompile {
-}
+public @interface ProdOnly {}

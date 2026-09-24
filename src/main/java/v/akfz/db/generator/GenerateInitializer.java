@@ -6,9 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Generates Mod Initializer entry points for Forge and Fabric.
+ * Generates loader entry points for Forge/Fabric/NeoForge.
  * <p>
- * Annotate your class implementing {@link InitializerClass}.
+ * <b>Do it exactly like this</b>, or it won't initialize:
+ * <pre>{@code
+ * @GenerateInitializer(modId = "aslib")
+ * public class AsLib {
+ *     public void init() { ... }
+ * }
+ * }</pre>
+ * No interface needed, no superclass — just a {@code public void init()}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
@@ -18,10 +25,15 @@ public @interface GenerateInitializer {
     LoaderType loader() default LoaderType.Both;
 
     /** Class to instantiate (defaults to annotated class) */
-    Class<? extends InitializerClass> mainClass() default NotAClass.class;
+    Class<?> mainClass() default NotAClass.class;
 
     /** Target Mod ID (required for Forge/NeoForge) */
     String modId();
+
+    /**
+     * Replaces default loader by LoaderGuide method (read javadoc inside)
+     */
+    Class<?>[] guides() default {};
 
     /** Marks this as a client-side only initializer (ClientModInitializer for Fabric, ClientSetup for Forge) */
     boolean isClient() default false;
