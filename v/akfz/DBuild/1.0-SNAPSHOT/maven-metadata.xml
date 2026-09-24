@@ -3,38 +3,38 @@
   <groupId>v.akfz</groupId>
   <artifactId>DBuild</artifactId>
   <versioning>
-    <lastUpdated>20260821023344</lastUpdated>
+    <lastUpdated>20260924205508</lastUpdated>
     <snapshot>
-      <timestamp>20260821.023344</timestamp>
+      <timestamp>20260924.205508</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
-        <classifier>javadoc</classifier>
+        <classifier>sources</classifier>
         <extension>jar</extension>
-        <value>1.0-20260821.023344-1</value>
-        <updated>20260821023344</updated>
+        <value>1.0-20260924.205508-1</value>
+        <updated>20260924205508</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0-20260821.023344-1</value>
-        <updated>20260821023344</updated>
+        <value>1.0-20260924.205508-1</value>
+        <updated>20260924205508</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>module</extension>
-        <value>1.0-20260821.023344-1</value>
-        <updated>20260821023344</updated>
+        <value>1.0-20260924.205508-1</value>
+        <updated>20260924205508</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0-20260821.023344-1</value>
-        <updated>20260821023344</updated>
+        <value>1.0-20260924.205508-1</value>
+        <updated>20260924205508</updated>
       </snapshotVersion>
       <snapshotVersion>
-        <classifier>sources</classifier>
+        <classifier>javadoc</classifier>
         <extension>jar</extension>
-        <value>1.0-20260821.023344-1</value>
-        <updated>20260821023344</updated>
+        <value>1.0-20260924.205508-1</value>
+        <updated>20260924205508</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
